@@ -1,12 +1,78 @@
-import React from 'react';
-import {View, Text, StyleSheet, Alert} from 'react-native';
+import React, {useState, useContext} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Alert,
+  Modal,
+  ActivityIndicator,
+} from 'react-native';
 import {Button, TextInput} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
+import {RegisterContext} from '../provider/RegisterProvider';
+import axios from 'axios';
 
 const Register3 = () => {
   const navigation = useNavigation();
+  const register = useContext(RegisterContext);
+
+  //FORM FIELDS
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+  const [repass, setRepass] = useState('');
+
+  const [loading, setLoading] = useState(false);
+
+  const submit = () => {
+    setLoading(true);
+    if (email == '' || pass == '' || repass == '') {
+      Alert.alert(
+        'Some inputs are empty!',
+        'Please fill in the fields that are empty.',
+      );
+    } else if (pass != repass) {
+      Alert.alert(
+        'Password Mismatch!',
+        'Please make sure your passwords match.',
+      );
+    } else {
+      const formdata = new FormData();
+      formdata.append('fname', register.fname);
+      formdata.append('mname', register.mname);
+      formdata.append('lname', register.lname);
+      formdata.append('cnum', register.cnum);
+      formdata.append('region', register.region);
+      formdata.append('province', register.province);
+      formdata.append('city', register.city);
+      formdata.append('barangay', register.barangay);
+      formdata.append('street', register.street);
+      formdata.append('email', email);
+      formdata.append('pass', pass);
+      formdata.append('customer', true);
+      axios
+        .post('http://10.0.2.2:8000/api/registercustomer', formdata)
+        .then(response => {
+          setLoading(false);
+          Alert.alert('Success!', 'You have now registered your account!');
+          console.log(response.data);
+          navigation.navigate('Login');
+        })
+        .catch(e => {
+          setLoading(false);
+          console.log(e);
+        });
+    }
+  };
+
   return (
     <View style={styles.container}>
+      <Modal transparent={true} visible={loading}>
+        <View style={styles.modalBackground}>
+          <View style={styles.activityIndicatorWrapper}>
+            <ActivityIndicator animating={loading} color="blue" />
+          </View>
+        </View>
+      </Modal>
       <View style={{width: '10%'}}>
         <Button
           icon="arrow-left"
@@ -36,6 +102,8 @@ const Register3 = () => {
           style={styles.input}
           outlineColor="#808080"
           activeOutlineColor="#808080"
+          value={email}
+          onChangeText={setEmail}
         />
         <TextInput
           mode="flat"
@@ -44,6 +112,8 @@ const Register3 = () => {
           outlineColor="#808080"
           activeOutlineColor="#808080"
           secureTextEntry
+          value={pass}
+          onChangeText={setPass}
         />
         <TextInput
           mode="flat"
@@ -52,19 +122,18 @@ const Register3 = () => {
           outlineColor="#808080"
           activeOutlineColor="#808080"
           secureTextEntry
+          value={repass}
+          onChangeText={setRepass}
         />
         <Button
           style={styles.button}
           mode="contained"
           color="#6E85F5"
           onPress={() => {
-            Alert.alert(
-              'Registered Successfully',
-              'Your account has now been registered!',
-            );
-            navigation.navigate('Login');
+            submit();
+            // navigation.navigate('Login');
           }}>
-          <Text style={{color: '#FFF'}}>Continue</Text>
+          <Text style={{color: '#FFF'}}>Submit</Text>
         </Button>
       </View>
     </View>
@@ -106,6 +175,23 @@ const styles = StyleSheet.create({
   button: {
     marginVertical: 10,
     width: '50%',
+  },
+
+  modalBackground: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    backgroundColor: '#00000040',
+  },
+  activityIndicatorWrapper: {
+    backgroundColor: '#FFFFFF',
+    height: 50,
+    width: 50,
+    borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
   },
 });
 

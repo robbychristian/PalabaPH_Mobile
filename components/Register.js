@@ -1,10 +1,42 @@
-import React from 'react';
-import {View, Text, StyleSheet, KeyboardAvoidingView} from 'react-native';
+import React, {useState, useContext} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Alert,
+} from 'react-native';
 import {Title, Subheading, TextInput, Button} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
+import {RegisterContext} from '../provider/RegisterProvider';
 
 const Register = () => {
   const navigation = useNavigation();
+
+  //FOR USE CONTEXT REGISTER
+  const register = useContext(RegisterContext);
+
+  //FORM FIELDS
+  const [fname, setFname] = useState('');
+  const [mname, setMname] = useState('');
+  const [lname, setLname] = useState('');
+  const [cnum, setCnum] = useState('');
+
+  const submit = () => {
+    if (fname == '' || mname == '' || lname == '' || cnum == '') {
+      Alert.alert(
+        'Some inputs are empty!',
+        'Please fill in the fields that are empty.',
+      );
+    } else {
+      register.fname = fname;
+      register.mname = mname;
+      register.lname = lname;
+      register.cnum = cnum;
+      navigation.push('Register2');
+    }
+  };
+
   return (
     <KeyboardAvoidingView style={styles.container}>
       <View style={{width: '10%'}}>
@@ -30,16 +62,40 @@ const Register = () => {
         <Text style={styles.description}>to provide correct information</Text>
       </View>
       <View style={styles.bodyContainer}>
-        <TextInput mode="flat" style={styles.input} label="First name" />
-        <TextInput mode="flat" style={styles.input} label="Middle name" />
-        <TextInput mode="flat" style={styles.input} label="Last name" />
-        <TextInput mode="flat" style={styles.input} label="Phone" />
+        <TextInput
+          mode="flat"
+          style={styles.input}
+          value={fname}
+          onChangeText={setFname}
+          label="First name"
+        />
+        <TextInput
+          mode="flat"
+          style={styles.input}
+          value={mname}
+          onChangeText={setMname}
+          label="Middle name"
+        />
+        <TextInput
+          mode="flat"
+          style={styles.input}
+          value={lname}
+          onChangeText={setLname}
+          label="Last name"
+        />
+        <TextInput
+          mode="flat"
+          style={styles.input}
+          value={cnum}
+          onChangeText={setCnum}
+          label="Phone"
+        />
         <Button
           style={styles.button}
           mode="contained"
           color="#6E85F5"
           onPress={() => {
-            navigation.push('Register2');
+            submit();
           }}>
           <Text style={{color: '#FFF'}}>Continue</Text>
         </Button>

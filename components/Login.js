@@ -1,12 +1,74 @@
-import React from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import React, {useState, useContext} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Alert,
+  Modal,
+  ActivityIndicator,
+} from 'react-native';
 import {TextInput, Button, Subheading} from 'react-native-paper';
 import {useNavigation, CommonActions} from '@react-navigation/native';
+import axios from 'axios';
+import {UserContext} from '../provider/UserProvider';
 
 const Login = () => {
   const navigation = useNavigation();
+  const user = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
+  const submit = () => {
+    if (email == '' || pass == '') {
+      Alert.alert(
+        'Invalid Input!',
+        'Please make sure all input fields are filled!',
+      );
+    } else {
+      setLoading(true);
+      const formdata = new FormData();
+      formdata.append('email', email);
+      formdata.append('password', pass);
+      axios
+        .post('http://10.0.2.2:8000/api/logincustomer', formdata)
+        .then(response => {
+          if (response.data.response === true) {
+            setLoading(false);
+            console.log(response.data);
+            user.fname = response.data.data[0].first_name;
+            user.mname = response.data.data[0].middle_name;
+            user.lname = response.data.data[0].last_name;
+            user.cnum = response.data.data[0].contact_no;
+            user.region = response.data.data[0].region;
+            user.province = response.data.data[0].state;
+            user.city = response.data.data[0].city;
+            user.barangay = response.data.data[0].barangay;
+            user.street = response.data.data[0].street;
+            user.email = response.data.data[0].email;
+            navigation.navigate('HomeStack');
+          } else {
+            setLoading(false);
+            console.log(response.data);
+            Alert.alert('Credentials error!', 'Incorrect email or password!');
+          }
+        })
+        .catch(e => {
+          setLoading(false);
+          console.log(e);
+        });
+    }
+  };
   return (
     <View style={styles.container}>
+      <Modal transparent={true} visible={loading}>
+        <View style={styles.modalBackground}>
+          <View style={styles.activityIndicatorWrapper}>
+            <ActivityIndicator animating={loading} color="blue" />
+          </View>
+        </View>
+      </Modal>
       <View style={styles.headerContainer}>
         <Image
           source={require('../assets/Login1.png')}
@@ -14,19 +76,27 @@ const Login = () => {
         />
       </View>
       <View style={styles.bodyContainer}>
-        <TextInput mode="flat" style={styles.input} label="Email" />
+        <TextInput
+          mode="flat"
+          style={styles.input}
+          label="Email"
+          value={email}
+          onChangeText={setEmail}
+        />
         <TextInput
           mode="flat"
           style={styles.input}
           label="Password"
           secureTextEntry
+          value={pass}
+          onChangeText={setPass}
         />
         <Button
           style={styles.button}
           mode="contained"
           color="#6E85F5"
           onPress={() => {
-            navigation.push('HomeStack');
+            submit();
           }}>
           <Text style={{color: '#FFF'}}>Login</Text>
         </Button>
@@ -69,10 +139,26 @@ const styles = StyleSheet.create({
     width: '75%',
     marginVertical: 10,
   },
-
   button: {
     marginVertical: 10,
     width: '50%',
+  },
+
+  modalBackground: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    backgroundColor: '#00000040',
+  },
+  activityIndicatorWrapper: {
+    backgroundColor: '#FFFFFF',
+    height: 50,
+    width: 50,
+    borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
   },
 });
 

@@ -3,6 +3,10 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {Provider as PaperProvider} from 'react-native-paper';
 
+//REGISTER PROVIDER
+import {RegisterContext, RegisterProvider} from './provider/RegisterProvider';
+import {UserContext, UserProvider} from './provider/UserProvider';
+
 import Login from './components/Login';
 import Register from './components/Register';
 import Register2 from './components/Register2';
@@ -23,22 +27,26 @@ const HomeStackScreen = () => {
 
 const WelcomeStackScreen = () => {
   return (
-    <WelcomeStack.Navigator screenOptions={{headerShown: false}}>
-      <WelcomeStack.Screen name="Login" component={Login} />
-      <WelcomeStack.Screen name="Register" component={Register} />
-      <WelcomeStack.Screen name="Register2" component={Register2} />
-      <WelcomeStack.Screen name="Register3" component={Register3} />
-      <WelcomeStack.Screen name="HomeStack" component={HomeStackScreen} />
-    </WelcomeStack.Navigator>
+    <RegisterProvider>
+      <WelcomeStack.Navigator screenOptions={{headerShown: false}}>
+        <WelcomeStack.Screen name="Login" component={Login} />
+        <WelcomeStack.Screen name="Register" component={Register} />
+        <WelcomeStack.Screen name="Register2" component={Register2} />
+        <WelcomeStack.Screen name="Register3" component={Register3} />
+        <WelcomeStack.Screen name="HomeStack" component={HomeStackScreen} />
+      </WelcomeStack.Navigator>
+    </RegisterProvider>
   );
 };
 
 const App = () => {
   return (
     <PaperProvider>
-      <NavigationContainer>
-        <WelcomeStackScreen />
-      </NavigationContainer>
+      <UserProvider>
+        <NavigationContainer>
+          <WelcomeStackScreen />
+        </NavigationContainer>
+      </UserProvider>
     </PaperProvider>
   );
 };

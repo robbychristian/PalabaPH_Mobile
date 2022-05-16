@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, {useRef, useState, useEffect, useContext} from 'react';
 import {
   View,
   Text,
@@ -10,10 +10,12 @@ import {
 import {Button, TextInput, Dialog, Paragraph} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import {Picker} from '@react-native-picker/picker';
+import {RegisterContext} from '../provider/RegisterProvider';
 import axios from 'axios';
 
 const Register2 = () => {
   const navigation = useNavigation();
+  const register = useContext(RegisterContext);
 
   //FORM DETAILS
   const regionRef = useRef();
@@ -78,9 +80,25 @@ const Register2 = () => {
             setAvailableBarangay(brgy.data);
           });
       }
-    }, 1000);
+    }, 3000);
     return () => clearInterval(interval);
   }, [region, province, city]);
+
+  const submit = () => {
+    if (street == '') {
+      Alert.alert(
+        'Some inputs are empty!',
+        'Please fill in the fields that are empty.',
+      );
+    } else {
+      register.region = region;
+      register.province = province;
+      register.city = city;
+      register.barangay = barangay;
+      register.street = street;
+      navigation.push('Register3');
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -194,7 +212,7 @@ const Register2 = () => {
               mode="contained"
               color="#6E85F5"
               onPress={() => {
-                navigation.push('Register3');
+                submit();
               }}>
               <Text style={{color: '#FFF'}}>Continue</Text>
             </Button>
