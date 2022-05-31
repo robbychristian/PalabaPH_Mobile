@@ -3,6 +3,7 @@ import React, {useState} from 'react';
 const UserContext = React.createContext();
 
 const UserProvider = props => {
+  const [id, setId] = useState('');
   const [fname, setFname] = useState('');
   const [mname, setMname] = useState('');
   const [lname, setLname] = useState('');
@@ -18,6 +19,7 @@ const UserProvider = props => {
   return (
     <UserContext.Provider
       value={{
+        id,
         fname,
         mname,
         lname,
@@ -29,6 +31,7 @@ const UserProvider = props => {
         street,
         email,
         pass,
+        setId,
         setFname,
         setMname,
         setLname,

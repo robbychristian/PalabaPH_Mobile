@@ -13,6 +13,7 @@ import Register2 from './components/Register2';
 import Register3 from './components/Register3';
 
 import Home from './components/Home/Home';
+import AccountDetails from './components/Home/Account/AccountDetails';
 
 const WelcomeStack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -21,6 +22,7 @@ const HomeStackScreen = () => {
   return (
     <HomeStack.Navigator screenOptions={{headerShown: false}}>
       <HomeStack.Screen name="Home" component={Home} />
+      <HomeStack.Screen name="AccountDetails" component={AccountDetails} />
     </HomeStack.Navigator>
   );
 };

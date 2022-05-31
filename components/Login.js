@@ -37,6 +37,7 @@ const Login = () => {
           if (response.data.response === true) {
             setLoading(false);
             console.log(response.data);
+            user.id = response.data.data[0].id;
             user.fname = response.data.data[0].first_name;
             user.mname = response.data.data[0].middle_name;
             user.lname = response.data.data[0].last_name;
@@ -47,6 +48,7 @@ const Login = () => {
             user.barangay = response.data.data[0].barangay;
             user.street = response.data.data[0].street;
             user.email = response.data.data[0].email;
+            user.pass = response.data.data[0].pass;
             navigation.navigate('HomeStack');
           } else {
             setLoading(false);
