@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "373825974217",
+    "project_id": "palabaph",
+    "storage_bucket": "palabaph.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:373825974217:android:75352e3bd42d307aaf0218",
+        "android_client_info": {
+          "package_name": "com.palabaph"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "373825974217-edj6at3qsfp21ffn4ft2qumeu2ke4art.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBxCo7ckb3YQplIMZZS7ao7uaz6aFjbFIM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "373825974217-edj6at3qsfp21ffn4ft2qumeu2ke4art.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

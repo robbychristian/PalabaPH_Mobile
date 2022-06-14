@@ -8,9 +8,11 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {Title, ToggleButton} from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import moment from 'moment';
 const LaundryShop = () => {
+  const navigation = useNavigation();
   const [laundryShops, setLaundryShops] = useState([]);
   const [walkIn, setWalkIn] = useState('checked');
   const [dropOff, setDropOff] = useState('checked');
@@ -31,8 +33,16 @@ const LaundryShop = () => {
   useEffect(() => {
     axios.get('http://10.0.2.2:8000/api/getlaundries').then(response => {
       setLaundryShops(response.data.data);
+      console.log(response.data.data);
     });
   }, []);
+
+  const individualLaundry = id => {
+    navigation.navigate('IndividualLaundry', {
+      laundryId: id,
+    });
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -99,7 +109,12 @@ const LaundryShop = () => {
         <ScrollView style={{width: '100%'}}>
           {laundryShops.map((item, id) => {
             return (
-              <TouchableOpacity key={id} style={styles.cardContainer}>
+              <TouchableOpacity
+                key={id}
+                style={styles.cardContainer}
+                onPress={() => {
+                  individualLaundry(item.id);
+                }}>
                 <Image
                   source={require('../../../assets/Laundry1.jpg')}
                   style={{height: 350, width: 350, borderRadius: 30}}

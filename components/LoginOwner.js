@@ -1,67 +1,43 @@
-import React, {useState, useContext} from 'react';
+import React, {useState} from 'react';
 import {
   View,
-  Text,
-  StyleSheet,
   Image,
-  TouchableOpacity,
-  Alert,
+  StyleSheet,
   Modal,
   ActivityIndicator,
+  Text,
+  TouchableOpacity,
+  Alert,
 } from 'react-native';
-import {TextInput, Button, Subheading} from 'react-native-paper';
-import {useNavigation, CommonActions} from '@react-navigation/native';
+import {TextInput, Button, Subheading, Headline} from 'react-native-paper';
+import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
-import {UserContext} from '../provider/UserProvider';
 
-const Login = () => {
+const LoginOwner = () => {
   const navigation = useNavigation();
-  const user = useContext(UserContext);
+
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
+
   const submit = () => {
-    if (email == '' || pass == '') {
-      Alert.alert(
-        'Invalid Input!',
-        'Please make sure all input fields are filled!',
-      );
-    } else {
-      setLoading(true);
-      const formdata = new FormData();
-      formdata.append('email', email);
-      formdata.append('password', pass);
-      axios
-        .post('http://10.0.2.2:8000/api/logincustomer', formdata)
-        .then(response => {
-          if (response.data.response === true) {
-            setLoading(false);
-            console.log(response.data);
-            user.id = response.data.data[0].customer_id;
-            user.fname = response.data.data[0].first_name;
-            user.mname = response.data.data[0].middle_name;
-            user.lname = response.data.data[0].last_name;
-            user.cnum = response.data.data[0].contact_no;
-            user.region = response.data.data[0].region;
-            user.province = response.data.data[0].state;
-            user.city = response.data.data[0].city;
-            user.barangay = response.data.data[0].barangay;
-            user.street = response.data.data[0].street;
-            user.email = response.data.data[0].email;
-            user.pass = response.data.data[0].pass;
-            navigation.navigate('HomeStack');
-          } else {
-            setLoading(false);
-            console.log(response.data);
-            Alert.alert('Credentials error!', 'Incorrect email or password!');
-          }
-        })
-        .catch(e => {
-          setLoading(false);
-          console.log(e);
-        });
-    }
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', pass);
+    axios
+      .post('http://10.0.2.2:8000/api/ownerlogin', formData)
+      .then(response => {
+        if (response.data === 'password correct') {
+          Alert.alert('Success!', 'Logged in successfully!');
+        } else {
+          Alert.alert('Error!', 'Email/Password is incorrect!');
+        }
+      })
+      .catch(e => {
+        console.log(e);
+      });
   };
+
   return (
     <View style={styles.container}>
       <Modal transparent={true} visible={loading}>
@@ -78,6 +54,7 @@ const Login = () => {
         />
       </View>
       <View style={styles.bodyContainer}>
+        <Headline style={{color: '#fff'}}>Laundry Owner Login</Headline>
         <TextInput
           mode="flat"
           style={styles.input}
@@ -102,29 +79,16 @@ const Login = () => {
           }}>
           <Text style={{color: '#FFF'}}>Login</Text>
         </Button>
-        <TouchableOpacity onPress={() => navigation.push('Register')}>
+        <TouchableOpacity onPress={() => navigation.navigate('LoginRider')}>
           <Subheading style={{color: '#FFF'}}>
-            Don't have an account yet?{' '}
+            Login as Rider{' '}
             <Subheading
               style={{
                 color: '#fff',
                 fontWeight: 'bold',
                 textDecorationLine: 'underline',
               }}>
-              Register Now!
-            </Subheading>
-          </Subheading>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.push('LoginOwner')}>
-          <Subheading style={{color: '#FFF'}}>
-            Laundry Owner?{' '}
-            <Subheading
-              style={{
-                color: '#fff',
-                fontWeight: 'bold',
-                textDecorationLine: 'underline',
-              }}>
-              Login Here
+              Click Here!
             </Subheading>
           </Subheading>
         </TouchableOpacity>
@@ -148,7 +112,6 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
-
   input: {
     backgroundColor: '#fff',
     width: '75%',
@@ -177,4 +140,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default LoginOwner;
