@@ -46,8 +46,9 @@ const IndividualLaundryShop = () => {
   //Modal
   const [itemNumber, setItemNumber] = useState(0);
   const [visible, setVisible] = useState(false);
-  const [itemName, setItemName] = useState('');
-  const [itemPrice, setItemPrice] = useState('');
+  const [itemName, setItemName] = useState([]);
+  const [itemPrice, setItemPrice] = useState([]);
+  const [totalPrice, setTotalPrice] = useState(0);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
   const [cartArray, setCartArray] = useState([]);
@@ -95,15 +96,18 @@ const IndividualLaundryShop = () => {
         setMachines(response.data);
       });
 
-    console.log(cartArray);
+    console.log(itemPrice);
+    console.log(itemName);
+    console.log(totalPrice);
   }, [itemNumber]);
 
   // ============================FUNCTIONS============================ //
 
   const addToCart = (id, name, price, weight) => {
     setItemNumber(count => count + 1);
-    setItemName(name);
-    setItemPrice(price);
+    itemName.push(name);
+    itemPrice.push(price);
+    setTotalPrice(parseInt(price) + parseInt(totalPrice));
     cartArray.push(
       <ItemComponent key={id} name={name} price={price} weight={weight} />,
     );
@@ -112,6 +116,10 @@ const IndividualLaundryShop = () => {
   const submitCart = () => {
     navigation.navigate('CartSubmission', {
       allItems: cartArray,
+      itemPrices: itemPrice,
+      itemNames: itemName,
+      totalPrice: totalPrice,
+      laundryId: route.params.laundryId,
     });
   };
 
@@ -142,8 +150,8 @@ const IndividualLaundryShop = () => {
                     {item.type_of_laundry}
                   </Caption>
                   <Caption style={{fontSize: 14, color: '#000'}}>
-                    {moment(item.opening_time).format('hh:MMA')} -{' '}
-                    {moment(item.closing_time).format('hh:MMA')}
+                    {moment(item.opening_time).format('hh:mmA')} -{' '}
+                    {moment(item.closing_time).format('hh:mmA')}
                   </Caption>
                 </View>
               </View>
@@ -280,7 +288,7 @@ const IndividualLaundryShop = () => {
                 {item.status ? (
                   <Badge
                     style={{
-                      backgroundColor: '#66ff66',
+                      backgroundColor: '#ff6666',
                       width: '30%',
                       height: '45%',
                       alignSelf: 'center',
@@ -335,6 +343,9 @@ const IndividualLaundryShop = () => {
           <TouchableOpacity
             onPress={() => {
               setItemNumber(0);
+              setItemName([]);
+              setItemPrice([]);
+              setTotalPrice(0);
               cartArray.splice(0, cartArray.length);
               hideModal();
             }}>

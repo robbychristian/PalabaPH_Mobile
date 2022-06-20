@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   View,
   Text,
@@ -7,15 +7,47 @@ import {
   ActivityIndicator,
   Image,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {TextInput, Button, Subheading, Headline} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
+import {UserContext} from '../provider/UserProvider';
+import axios from 'axios';
 
 const LoginRider = () => {
   const navigation = useNavigation();
+  const user = useContext(UserContext);
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
+
+  const login = () => {
+    const formdata = new FormData();
+    formdata.append('email', email);
+    formdata.append('password', pass);
+    axios
+      .post('http://10.0.2.2:8000/api/riderlogin', formdata)
+      .then(response => {
+        if (response.data.response != true) {
+          Alert.alert('Error!', 'Email/Password is incorrect!');
+        } else {
+          Alert.alert('Success', 'Logged in!');
+          console.log(response.data.data.laundry_id);
+          user.id = response.data.data.id;
+          user.laundryId = response.data.data.laundry_id;
+          user.fname = response.data.data.first_name;
+          user.mname = response.data.data.middle_name;
+          user.lname = response.data.data.last_name;
+          user.cnum = response.data.data.contact_no;
+          user.email = response.data.data.email;
+          navigation.navigate('RiderStack');
+        }
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  };
+
   return (
     <View style={styles.container}>
       <Modal transparent={true} visible={loading}>
@@ -53,7 +85,7 @@ const LoginRider = () => {
           mode="contained"
           color="#6E85F5"
           onPress={() => {
-            console.log('login as rider');
+            login();
           }}>
           <Text style={{color: '#FFF'}}>Login</Text>
         </Button>

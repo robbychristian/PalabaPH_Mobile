@@ -1,29 +1,112 @@
 import React, {useEffect, useState, useContext} from 'react';
 import {
   View,
-  Text,
+  Image,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Modal,
+  ActivityIndicator,
 } from 'react-native';
 import {Subheading, Button, RadioButton} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {UserContext} from '../../../provider/UserProvider';
+import axios from 'axios';
 
 const CartSubmission = () => {
   const route = useRoute();
   const user = useContext(UserContext);
   const navigation = useNavigation();
+  const [loading, setLoading] = useState(false);
   const allItems = route.params.allItems;
+  const itemNames = route.params.itemNames;
+  const itemPrices = route.params.itemPrices;
+  const laundryId = route.params.laundryId;
+  const totalPrice = route.params.totalPrice;
 
   //Service RadioButton
-  const [serviceChecked, setServiceChecked] = useState('first');
+  const [serviceChecked, setServiceChecked] = useState('Pick-up');
+  //Segregation RadioButton
+  const [segregation, setSegregation] = useState('Whites');
+
+  //MODAL PAYMENT
+  const [showQR, setShowQR] = useState(false);
 
   useEffect(() => {
-    console.log(allItems[0]);
+    console.log(itemNames);
+    console.log(itemPrices);
+    console.log(totalPrice);
   }, []);
+
+  const submitPickUp = () => {
+    setLoading(true);
+    const orderForm = new FormData();
+    orderForm.append('laundry_id', laundryId);
+    orderForm.append('user_id', user.id);
+    orderForm.append('first_name', user.fname);
+    orderForm.append('middle_name', user.mname);
+    orderForm.append('last_name', user.lname);
+    orderForm.append('total_price', totalPrice);
+    orderForm.append('mode_of_payment', 'cashless');
+    orderForm.append('commodity_type', serviceChecked);
+    orderForm.append('segregation_type', segregation);
+    orderForm.append('status', 'Pending');
+    axios
+      .post('http://10.0.2.2:8000/api/ordermobile', orderForm)
+      .then(response => {
+        console.log(response.data);
+        const itemData = [];
+        for (let i = 0; i <= itemNames.length - 1; i++) {
+          itemData[i] = new FormData();
+          itemData[i].append('order_id', response.data);
+          itemData[i].append('item_name', itemNames[i]);
+          itemData[i].append('item_price', itemPrices[i]);
+          axios
+            .post('http://10.0.2.2:8000/api/ordereditems', itemData[i])
+            .then(response => {
+              console.log(response.data);
+              setLoading(false);
+            })
+            .catch(e => {
+              console.log(e);
+              setLoading(false);
+            });
+        }
+      })
+      .catch(e => {
+        console.log(e);
+        setLoading(false);
+      });
+  };
   return (
     <View style={styles.container}>
+      <Modal transparent={true} visible={loading}>
+        <View style={styles.modalBackground}>
+          <View style={styles.activityIndicatorWrapper}>
+            <ActivityIndicator animating={loading} color="blue" />
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        transparent={true}
+        visible={showQR}
+        animationType="fade"
+        onRequestClose={() => setShowQR(false)}>
+        <View style={styles.modalBackground}>
+          <View style={styles.modalQrWrapper}>
+            <View style={{width: '100%', alignItems: 'flex-end'}}>
+              <Button icon="close" onPress={() => setShowQR(false)} />
+            </View>
+            <Image
+              source={require('../../../assets/Gcash_QR.jpg')}
+              style={{height: '80%', width: '90%'}}
+            />
+            <Button style={{width: '80%', marginVertical: 10}} mode="contained">
+              Submit
+            </Button>
+          </View>
+        </View>
+      </Modal>
       <View
         style={{width: '100%', backgroundColor: '#272f56', marginBottom: 20}}>
         <View style={{width: '10%'}}>
@@ -60,23 +143,63 @@ const CartSubmission = () => {
       {/* BODY CONTAINER */}
 
       <View style={styles.bodyContainer}>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <RadioButton
-            value="first"
-            status={serviceChecked === 'first' ? 'checked' : 'unchecked'}
-            onPress={() => setServiceChecked('first')}
-          />
-          <Subheading>Pick-up and Delivery</Subheading>
+        <View>
+          <Subheading>Commodity Type</Subheading>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <RadioButton
+              value="Pick-up"
+              status={serviceChecked === 'Pick-up' ? 'checked' : 'unchecked'}
+              onPress={() => setServiceChecked('Pick-up')}
+            />
+            <Subheading>Pick-up and Delivery</Subheading>
+          </View>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <RadioButton
+              value="Reservation"
+              status={
+                serviceChecked === 'Reservation' ? 'checked' : 'unchecked'
+              }
+              onPress={() => setServiceChecked('Reservation')}
+            />
+            <Subheading>Reservation</Subheading>
+          </View>
         </View>
-        <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          <RadioButton
-            value="second"
-            status={serviceChecked === 'second' ? 'checked' : 'unchecked'}
-            onPress={() => setServiceChecked('second')}
-          />
-          <Subheading>Reservation</Subheading>
+        <View>
+          <Subheading>Segregation</Subheading>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <RadioButton
+              value="Whites"
+              status={segregation === 'Whites' ? 'checked' : 'unchecked'}
+              onPress={() => setSegregation('Whites')}
+            />
+            <Subheading>Whites</Subheading>
+          </View>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <RadioButton
+              value="Delicates"
+              status={segregation === 'Delicates' ? 'checked' : 'unchecked'}
+              onPress={() => setSegregation('Delicates')}
+            />
+            <Subheading>Delicates</Subheading>
+          </View>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <RadioButton
+              value="Colors"
+              status={segregation === 'Colors' ? 'checked' : 'unchecked'}
+              onPress={() => setSegregation('Colors')}
+            />
+            <Subheading>Colors</Subheading>
+          </View>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <RadioButton
+              value="Mixed"
+              status={segregation === 'Mixed' ? 'checked' : 'unchecked'}
+              onPress={() => setSegregation('Mixed')}
+            />
+            <Subheading>Mixed</Subheading>
+          </View>
         </View>
-        {serviceChecked === 'first' ? (
+        {serviceChecked === 'Pick-up' ? (
           <View
             style={{paddingVertical: 10, flexDirection: 'row', width: '60%'}}>
             <Subheading style={{fontWeight: 'bold'}}>
@@ -101,7 +224,7 @@ const CartSubmission = () => {
           alignItems: 'center',
           marginVertical: 10,
         }}>
-        {serviceChecked === 'first' ? (
+        {serviceChecked === 'Pick-up' ? (
           <TouchableOpacity
             style={{
               width: '90%',
@@ -109,7 +232,8 @@ const CartSubmission = () => {
               alignItems: 'center',
               height: '100%',
               backgroundColor: '#272f56',
-            }}>
+            }}
+            onPress={() => submitPickUp()}>
             <Subheading style={{color: '#fff'}}>Confirm Pick Up</Subheading>
           </TouchableOpacity>
         ) : (
@@ -146,6 +270,33 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 20,
     paddingVertical: 10,
+  },
+
+  modalQrWrapper: {
+    backgroundColor: '#FFFFFF',
+    height: '70%',
+    width: '90%',
+    borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+
+  modalBackground: {
+    flex: 1,
+    alignItems: 'center',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    backgroundColor: '#00000040',
+  },
+  activityIndicatorWrapper: {
+    backgroundColor: '#FFFFFF',
+    height: 50,
+    width: 50,
+    borderRadius: 10,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-around',
   },
 });
 

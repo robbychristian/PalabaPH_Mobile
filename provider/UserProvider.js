@@ -16,6 +16,9 @@ const UserProvider = props => {
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
 
+  //for rider
+  const [laundryId, setLaundryId] = useState('');
+
   return (
     <UserContext.Provider
       value={{
@@ -31,6 +34,7 @@ const UserProvider = props => {
         street,
         email,
         pass,
+        laundryId,
         setId,
         setFname,
         setMname,
@@ -43,6 +47,7 @@ const UserProvider = props => {
         setStreet,
         setEmail,
         setPass,
+        setLaundryId,
       }}>
       {props.children}
     </UserContext.Provider>

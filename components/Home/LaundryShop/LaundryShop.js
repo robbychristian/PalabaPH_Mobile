@@ -35,7 +35,7 @@ const LaundryShop = () => {
       setLaundryShops(response.data.data);
       console.log(response.data.data);
     });
-  }, []);
+  }, [walkIn, dropOff, pickup, reservation]);
 
   const individualLaundry = id => {
     navigation.navigate('IndividualLaundry', {
@@ -108,48 +108,59 @@ const LaundryShop = () => {
       <View style={styles.bodyContainer}>
         <ScrollView style={{width: '100%'}}>
           {laundryShops.map((item, id) => {
-            return (
-              <TouchableOpacity
-                key={id}
-                style={styles.cardContainer}
-                onPress={() => {
-                  individualLaundry(item.id);
-                }}>
-                <Image
-                  source={require('../../../assets/Laundry1.jpg')}
-                  style={{height: 350, width: 350, borderRadius: 30}}
-                />
-                <View style={{width: 350}}>
-                  <Text
-                    style={{fontWeight: 'bold', fontSize: 18, color: '#000'}}>
-                    {item.name}
-                  </Text>
-                  <Text style={{fontWeight: '300', fontSize: 16}}>
-                    {item.type_of_laundry}
-                  </Text>
-                  <Text style={{fontWeight: '300', fontSize: 16}}>
-                    {moment(item.opening_time).format('h:mmA') +
-                      ' - ' +
-                      moment(item.closing_time).format('h:mmA')}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            );
+            if (
+              (walkIn == 'checked' && item.self_service == true) ||
+              (dropOff == 'checked' && item.full_service) ||
+              (pickup == 'checked' && item.pick_up) ||
+              (reservation == 'checked' && item.reservations)
+            ) {
+              return (
+                <TouchableOpacity
+                  key={id}
+                  style={styles.cardContainer}
+                  onPress={() => {
+                    individualLaundry(item.id);
+                  }}>
+                  <Image
+                    source={require('../../../assets/Laundry1.jpg')}
+                    style={{height: 350, width: 350, borderRadius: 30}}
+                  />
+                  <View style={{width: 350}}>
+                    <Text
+                      style={{fontWeight: 'bold', fontSize: 18, color: '#000'}}>
+                      {item.name}
+                    </Text>
+                    <Text style={{fontWeight: '300', fontSize: 16}}>
+                      {item.type_of_laundry}
+                    </Text>
+                    <Text style={{fontWeight: '300', fontSize: 16}}>
+                      {moment(item.opening_time).format('h:mmA') +
+                        ' - ' +
+                        moment(item.closing_time).format('h:mmA')}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            } else {
+              return (
+                <TouchableOpacity style={styles.cardContainer}>
+                  <Image
+                    source={require('../../../assets/Laundry1.jpg')}
+                    style={{height: 350, width: 350, borderRadius: 30}}
+                  />
+                  <View style={{width: 350}}>
+                    <Text
+                      style={{fontWeight: 'bold', fontSize: 18, color: '#000'}}>
+                      Laundryhan Name
+                    </Text>
+                    <Text style={{fontWeight: '300', fontSize: 16}}>
+                      6:00AM - 9:00PM
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            }
           })}
-          <TouchableOpacity style={styles.cardContainer}>
-            <Image
-              source={require('../../../assets/Laundry1.jpg')}
-              style={{height: 350, width: 350, borderRadius: 30}}
-            />
-            <View style={{width: 350}}>
-              <Text style={{fontWeight: 'bold', fontSize: 18, color: '#000'}}>
-                Laundryhan Name
-              </Text>
-              <Text style={{fontWeight: '300', fontSize: 16}}>
-                6:00AM - 9:00PM
-              </Text>
-            </View>
-          </TouchableOpacity>
         </ScrollView>
       </View>
     </View>
