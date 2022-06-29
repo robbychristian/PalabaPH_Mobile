@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState, useContext, useRef} from 'react';
 import {
   View,
   Image,
@@ -7,13 +7,33 @@ import {
   TouchableOpacity,
   Modal,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
-import {Subheading, Button, RadioButton} from 'react-native-paper';
+import {Subheading, Button, RadioButton, TextInput} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {UserContext} from '../../../provider/UserProvider';
 import axios from 'axios';
+import {Picker} from '@react-native-picker/picker';
+import moment from 'moment';
 
 const CartSubmission = () => {
+  //FOR RESERVATIONS
+  const timeSlotRef = useRef();
+  const machineWash = useRef();
+  const machineDry = useRef();
+  const openTimeSlot = () => {
+    timeSlotRef.current.focus();
+  };
+  const openMachineWash = () => {
+    machineWash.current.focus();
+  };
+  const openMachineDry = () => {
+    machineDry.current.focus();
+  };
+  const [timeSlot, setTimeSlot] = useState('');
+  const [chosenMachineWash, setChosenMachineWash] = useState('');
+  const [chosenMachineDry, setChosenMachineDry] = useState('');
+
   const route = useRoute();
   const user = useContext(UserContext);
   const navigation = useNavigation();
@@ -28,7 +48,13 @@ const CartSubmission = () => {
   const [serviceChecked, setServiceChecked] = useState('Pick-up');
   //Segregation RadioButton
   const [segregation, setSegregation] = useState('Whites');
+  const [availableTimeSlot, setAvailableTimeSlot] = useState([]);
 
+  // GET ALL Machines
+  const [availableMachines, setAvailableMachines] = useState([]);
+
+  // GET ALL RESERVATIONS
+  const [allReservation, setAllReservation] = useState([]);
   //MODAL PAYMENT
   const [showQR, setShowQR] = useState(false);
 
@@ -36,10 +62,102 @@ const CartSubmission = () => {
     console.log(itemNames);
     console.log(itemPrices);
     console.log(totalPrice);
+    const formdata = new FormData();
+    formdata.append('id', laundryId);
+    axios
+      .post('http://10.0.2.2:8000/api/gettimeslots', formdata)
+      .then(response => {
+        setAvailableTimeSlot(response.data);
+      });
+
+    axios
+      .get('http://10.0.2.2:8000/api/getallmachines/' + laundryId)
+      .then(response => {
+        setAvailableMachines(response.data);
+      });
   }, []);
 
+  const submitReservation = () => {
+    const getAllReservationForm = new FormData();
+    getAllReservationForm.append('laundry_id', laundryId);
+    axios
+      .post('http://10.0.2.2:8000/api/getallreservation', getAllReservationForm)
+      .then(response => {
+        setAllReservation(response.data);
+      });
+    allReservation.map((item, id) => {
+      if (
+        timeSlot.substring(0, 7) == item.time_start &&
+        timeSlot.substring(10, 17) == item.time_end &&
+        chosenMachineWash.substring(0, 1) == item.machine_id &&
+        moment().add(1, 'days').format('MM-DD-YYYY') == item.reservation_date
+      ) {
+        Alert.alert(
+          'Error!',
+          'Washing Machine reservation slot is already occupied!',
+        );
+      } else if (
+        timeSlot.substring(0, 7) == item.time_start &&
+        timeSlot.substring(10, 17) == item.time_end &&
+        chosenMachineDry.substring(0, 1) == item.machine_id &&
+        moment().add(1, 'days').format('MM-DD-YYYY') == item.reservation_date
+      ) {
+        Alert.alert(
+          'Error!',
+          'Drying Machine reservation slot is already occupied!',
+        );
+        console.log(timeSlot.substring(0, 7) + ' ' + item.time_start);
+        console.log(timeSlot.substring(10, 17) + ' ' + item.time_end);
+        console.log(chosenMachineWash.substring(0, 1) + ' ' + item.machine_id);
+        console.log('no error');
+      } else {
+        if (id == 1) {
+          Alert.alert(
+            'Success!',
+            'The slot has been reserved! Please make sure you come on the given time frame!',
+          );
+          const washReservation = new FormData();
+          washReservation.append('laundry_id', laundryId);
+          washReservation.append('user_id', user.id);
+          washReservation.append(
+            'machine_id',
+            chosenMachineWash.substring(0, 1),
+          );
+          washReservation.append(
+            'reservation_date',
+            moment().add(1, 'days').format('MM-DD-YYYY'),
+          );
+          washReservation.append('time_start', timeSlot.substring(0, 7));
+          washReservation.append('time_end', timeSlot.substring(10, 17));
+          washReservation.append('status', 'Pending');
+          axios
+            .post('http://10.0.2.2:8000/api/createreservation', washReservation)
+            .then(response => {
+              console.log(response.data);
+            });
+
+          const dryReservation = new FormData();
+          dryReservation.append('laundry_id', laundryId);
+          dryReservation.append('user_id', user.id);
+          dryReservation.append('machine_id', chosenMachineDry.substring(0, 1));
+          dryReservation.append(
+            'reservation_date',
+            moment().add(1, 'days').format('MM-DD-YYYY'),
+          );
+          dryReservation.append('time_start', timeSlot.substring(0, 7));
+          dryReservation.append('time_end', timeSlot.substring(10, 17));
+          dryReservation.append('status', 'Pending');
+          axios
+            .post('http://10.0.2.2:8000/api/createreservation', dryReservation)
+            .then(response => {
+              console.log(response.data);
+            });
+        }
+      }
+    });
+  };
+
   const submitPickUp = () => {
-    setLoading(true);
     const orderForm = new FormData();
     orderForm.append('laundry_id', laundryId);
     orderForm.append('user_id', user.id);
@@ -212,9 +330,129 @@ const CartSubmission = () => {
             </Subheading>
           </View>
         ) : (
-          <View>
-            <Subheading>Reservation Content</Subheading>
-          </View>
+          <ScrollView>
+            <View>
+              <Subheading>Reservation Content</Subheading>
+              <TouchableOpacity
+                style={styles.pickerContainer}
+                onPress={() => {
+                  openTimeSlot();
+                }}>
+                <TextInput
+                  mode="flat"
+                  label="Time Slot"
+                  style={styles.input}
+                  editable={false}
+                  value={timeSlot}
+                  outlineColor="#808080"
+                  activeOutlineColor="#808080"
+                  onChangeText={setTimeSlot}
+                />
+              </TouchableOpacity>
+
+              {/* WASH MACHINE OPTIONS */}
+              <View>
+                <Subheading>Wash Machines</Subheading>
+                <TouchableOpacity
+                  style={styles.pickerContainer}
+                  onPress={() => {
+                    openMachineWash();
+                  }}>
+                  <TextInput
+                    mode="flat"
+                    label="Machine Name"
+                    style={styles.input}
+                    editable={false}
+                    value={chosenMachineWash.substring(1)}
+                    outlineColor="#808080"
+                    activeOutlineColor="#808080"
+                    onChangeText={setChosenMachineWash}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              {/* DRY MACHINE OPTIONS */}
+              <View>
+                <Subheading>Dry Machines</Subheading>
+                <TouchableOpacity
+                  style={styles.pickerContainer}
+                  onPress={() => {
+                    openMachineDry();
+                  }}>
+                  <TextInput
+                    mode="flat"
+                    label="Machine Name"
+                    style={styles.input}
+                    editable={false}
+                    value={chosenMachineDry.substring(1)}
+                    outlineColor="#808080"
+                    activeOutlineColor="#808080"
+                    onChangeText={setChosenMachineDry}
+                  />
+                </TouchableOpacity>
+              </View>
+
+              {/* HIDDEN PICKER REFERENCE */}
+              <Picker
+                ref={timeSlotRef}
+                style={{opacity: 0, height: 0, display: 'none'}}
+                mode="dialog"
+                selectedValue={timeSlot}
+                onValueChange={(itemValue, itemIndex) =>
+                  setTimeSlot(itemValue)
+                }>
+                {availableTimeSlot.map((item, id) => {
+                  return (
+                    <Picker.Item
+                      key={id}
+                      label={item.time_start + ' - ' + item.time_end}
+                      value={item.time_start + ' - ' + item.time_end}
+                    />
+                  );
+                })}
+              </Picker>
+              <Picker
+                ref={machineWash}
+                style={{opacity: 0, height: 0, display: 'none'}}
+                mode="dialog"
+                selectedValue={chosenMachineWash}
+                onValueChange={(itemValue, itemIndex) =>
+                  setChosenMachineWash(itemValue)
+                }>
+                {availableMachines.map((item, id) => {
+                  if (item.machine_service == 'Wash') {
+                    return (
+                      <Picker.Item
+                        key={id}
+                        label={item.machine_name}
+                        value={item.id + item.machine_name}
+                      />
+                    );
+                  }
+                })}
+              </Picker>
+              <Picker
+                ref={machineDry}
+                style={{opacity: 0, height: 0, display: 'none'}}
+                mode="dialog"
+                selectedValue={chosenMachineDry}
+                onValueChange={(itemValue, itemIndex) =>
+                  setChosenMachineDry(itemValue)
+                }>
+                {availableMachines.map((item, id) => {
+                  if (item.machine_service == 'Dry') {
+                    return (
+                      <Picker.Item
+                        key={id}
+                        label={item.machine_name}
+                        value={item.id + item.machine_name}
+                      />
+                    );
+                  }
+                })}
+              </Picker>
+            </View>
+          </ScrollView>
         )}
       </View>
       <View
@@ -238,6 +476,9 @@ const CartSubmission = () => {
           </TouchableOpacity>
         ) : (
           <TouchableOpacity
+            onPress={() => {
+              submitReservation();
+            }}
             style={{
               width: '90%',
               justifyContent: 'center',
@@ -280,6 +521,17 @@ const styles = StyleSheet.create({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-around',
+  },
+  pickerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: '#fff',
+    width: '100%',
+    backgroundColor: '#fff',
+  },
+  input: {
+    backgroundColor: '#fff',
+    width: '90%',
   },
 
   modalBackground: {

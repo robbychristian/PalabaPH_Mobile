@@ -142,23 +142,7 @@ const LaundryShop = () => {
                 </TouchableOpacity>
               );
             } else {
-              return (
-                <TouchableOpacity style={styles.cardContainer}>
-                  <Image
-                    source={require('../../../assets/Laundry1.jpg')}
-                    style={{height: 350, width: 350, borderRadius: 30}}
-                  />
-                  <View style={{width: 350}}>
-                    <Text
-                      style={{fontWeight: 'bold', fontSize: 18, color: '#000'}}>
-                      Laundryhan Name
-                    </Text>
-                    <Text style={{fontWeight: '300', fontSize: 16}}>
-                      6:00AM - 9:00PM
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              );
+              return <View></View>;
             }
           })}
         </ScrollView>
