@@ -59,9 +59,6 @@ const CartSubmission = () => {
   const [showQR, setShowQR] = useState(false);
 
   useEffect(() => {
-    console.log(itemNames);
-    console.log(itemPrices);
-    console.log(totalPrice);
     const formdata = new FormData();
     formdata.append('id', laundryId);
     axios
@@ -85,76 +82,121 @@ const CartSubmission = () => {
       .then(response => {
         setAllReservation(response.data);
       });
-    allReservation.map((item, id) => {
-      if (
-        timeSlot.substring(0, 7) == item.time_start &&
-        timeSlot.substring(10, 17) == item.time_end &&
-        chosenMachineWash.substring(0, 1) == item.machine_id &&
-        moment().add(1, 'days').format('MM-DD-YYYY') == item.reservation_date
-      ) {
-        Alert.alert(
-          'Error!',
-          'Washing Machine reservation slot is already occupied!',
-        );
-      } else if (
-        timeSlot.substring(0, 7) == item.time_start &&
-        timeSlot.substring(10, 17) == item.time_end &&
-        chosenMachineDry.substring(0, 1) == item.machine_id &&
-        moment().add(1, 'days').format('MM-DD-YYYY') == item.reservation_date
-      ) {
-        Alert.alert(
-          'Error!',
-          'Drying Machine reservation slot is already occupied!',
-        );
-        console.log(timeSlot.substring(0, 7) + ' ' + item.time_start);
-        console.log(timeSlot.substring(10, 17) + ' ' + item.time_end);
-        console.log(chosenMachineWash.substring(0, 1) + ' ' + item.machine_id);
-        console.log('no error');
-      } else {
-        if (id == 1) {
+    if (allReservation.length != 0) {
+      allReservation.map((item, id) => {
+        if (
+          timeSlot.substring(0, 7) == item.time_start &&
+          timeSlot.substring(10, 17) == item.time_end &&
+          chosenMachineWash.substring(0, 1) == item.machine_id &&
+          moment().add(1, 'days').format('MM-DD-YYYY') == item.reservation_date
+        ) {
           Alert.alert(
-            'Success!',
-            'The slot has been reserved! Please make sure you come on the given time frame!',
+            'Error!',
+            'Washing Machine reservation slot is already occupied!',
           );
-          const washReservation = new FormData();
-          washReservation.append('laundry_id', laundryId);
-          washReservation.append('user_id', user.id);
-          washReservation.append(
-            'machine_id',
-            chosenMachineWash.substring(0, 1),
+        } else if (
+          timeSlot.substring(0, 7) == item.time_start &&
+          timeSlot.substring(10, 17) == item.time_end &&
+          chosenMachineDry.substring(0, 1) == item.machine_id &&
+          moment().add(1, 'days').format('MM-DD-YYYY') == item.reservation_date
+        ) {
+          Alert.alert(
+            'Error!',
+            'Drying Machine reservation slot is already occupied!',
           );
-          washReservation.append(
-            'reservation_date',
-            moment().add(1, 'days').format('MM-DD-YYYY'),
-          );
-          washReservation.append('time_start', timeSlot.substring(0, 7));
-          washReservation.append('time_end', timeSlot.substring(10, 17));
-          washReservation.append('status', 'Pending');
-          axios
-            .post('http://10.0.2.2:8000/api/createreservation', washReservation)
-            .then(response => {
-              console.log(response.data);
-            });
+        } else {
+          if (id == 1) {
+            Alert.alert(
+              'Success!',
+              'The slot has been reserved! Please make sure you come on the given time frame!',
+            );
+            const washReservation = new FormData();
+            washReservation.append('laundry_id', laundryId);
+            washReservation.append('user_id', user.id);
+            washReservation.append(
+              'machine_id',
+              chosenMachineWash.substring(0, 1),
+            );
+            washReservation.append(
+              'reservation_date',
+              moment().add(1, 'days').format('MM-DD-YYYY'),
+            );
+            washReservation.append('time_start', timeSlot.substring(0, 7));
+            washReservation.append('time_end', timeSlot.substring(10, 17));
+            washReservation.append('status', 'Pending');
+            axios
+              .post(
+                'http://10.0.2.2:8000/api/createreservation',
+                washReservation,
+              )
+              .then(response => {
+                console.log(response.data);
+              });
 
-          const dryReservation = new FormData();
-          dryReservation.append('laundry_id', laundryId);
-          dryReservation.append('user_id', user.id);
-          dryReservation.append('machine_id', chosenMachineDry.substring(0, 1));
-          dryReservation.append(
-            'reservation_date',
-            moment().add(1, 'days').format('MM-DD-YYYY'),
-          );
-          dryReservation.append('time_start', timeSlot.substring(0, 7));
-          dryReservation.append('time_end', timeSlot.substring(10, 17));
-          dryReservation.append('status', 'Pending');
-          axios
-            .post('http://10.0.2.2:8000/api/createreservation', dryReservation)
-            .then(response => {
-              console.log(response.data);
-            });
+            const dryReservation = new FormData();
+            dryReservation.append('laundry_id', laundryId);
+            dryReservation.append('user_id', user.id);
+            dryReservation.append(
+              'machine_id',
+              chosenMachineDry.substring(0, 1),
+            );
+            dryReservation.append(
+              'reservation_date',
+              moment().add(1, 'days').format('MM-DD-YYYY'),
+            );
+            dryReservation.append('time_start', timeSlot.substring(0, 7));
+            dryReservation.append('time_end', timeSlot.substring(10, 17));
+            dryReservation.append('status', 'Pending');
+            axios
+              .post(
+                'http://10.0.2.2:8000/api/createreservation',
+                dryReservation,
+              )
+              .then(response => {
+                console.log(response.data);
+              });
+          }
         }
-      }
-    });
+      });
+    } else {
+      Alert.alert(
+        'Success!',
+        'The slot has been reserved! Please make sure you come on the given time frame!',
+      );
+      const washReservation = new FormData();
+      washReservation.append('laundry_id', laundryId);
+      washReservation.append('user_id', user.id);
+      washReservation.append('machine_id', chosenMachineWash.substring(0, 1));
+      washReservation.append(
+        'reservation_date',
+        moment().add(1, 'days').format('MM-DD-YYYY'),
+      );
+      washReservation.append('time_start', timeSlot.substring(0, 7));
+      washReservation.append('time_end', timeSlot.substring(10, 17));
+      washReservation.append('status', 'Pending');
+      axios
+        .post('http://10.0.2.2:8000/api/createreservation', washReservation)
+        .then(response => {
+          console.log(response.data);
+        });
+
+      const dryReservation = new FormData();
+      dryReservation.append('laundry_id', laundryId);
+      dryReservation.append('user_id', user.id);
+      dryReservation.append('machine_id', chosenMachineDry.substring(0, 1));
+      dryReservation.append(
+        'reservation_date',
+        moment().add(1, 'days').format('MM-DD-YYYY'),
+      );
+      dryReservation.append('time_start', timeSlot.substring(0, 7));
+      dryReservation.append('time_end', timeSlot.substring(10, 17));
+      dryReservation.append('status', 'Pending');
+      axios
+        .post('http://10.0.2.2:8000/api/createreservation', dryReservation)
+        .then(response => {
+          navigation.navigate('Home');
+        });
+    }
   };
 
   const submitPickUp = () => {
@@ -182,8 +224,8 @@ const CartSubmission = () => {
           axios
             .post('http://10.0.2.2:8000/api/ordereditems', itemData[i])
             .then(response => {
-              console.log(response.data);
               setLoading(false);
+              navigation.navigate('Home');
             })
             .catch(e => {
               console.log(e);
