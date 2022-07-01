@@ -60,7 +60,7 @@ const IndividualLaundryShop = () => {
   useEffect(() => {
     axios
       .get(
-        'http://10.0.2.2:8000/api/getindividuallaundry/' +
+        'https://palabaph.com/api/getindividuallaundry/' +
           route.params.laundryId,
       )
       .then(response => {
@@ -68,13 +68,13 @@ const IndividualLaundryShop = () => {
       });
 
     axios
-      .get('http://10.0.2.2:8000/api/getmainservices/' + route.params.laundryId)
+      .get('https://palabaph.com/api/getmainservices/' + route.params.laundryId)
       .then(response => {
         setMainService(response.data);
       });
     axios
       .get(
-        'http://10.0.2.2:8000/api/getadditionalproducts/' +
+        'https://palabaph.com/api/getadditionalproducts/' +
           route.params.laundryId,
       )
       .then(response => {
@@ -82,7 +82,7 @@ const IndividualLaundryShop = () => {
       });
     axios
       .get(
-        'http://10.0.2.2:8000/api/getadditionalservices/' +
+        'https://palabaph.com/api/getadditionalservices/' +
           route.params.laundryId,
       )
       .then(response => {
@@ -90,7 +90,7 @@ const IndividualLaundryShop = () => {
       });
 
     axios
-      .get('http://10.0.2.2:8000/api/getallmachines/' + route.params.laundryId)
+      .get('https://palabaph.com/api/getallmachines/' + route.params.laundryId)
       .then(response => {
         console.log(response.data);
         setMachines(response.data);

@@ -26,7 +26,7 @@ const LoginRider = () => {
     formdata.append('email', email);
     formdata.append('password', pass);
     axios
-      .post('http://10.0.2.2:8000/api/riderlogin', formdata)
+      .post('https://palabaph.com/api/riderlogin', formdata)
       .then(response => {
         if (response.data.response != true) {
           Alert.alert('Error!', 'Email/Password is incorrect!');

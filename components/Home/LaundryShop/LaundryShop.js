@@ -31,7 +31,7 @@ const LaundryShop = () => {
     setReservation(reservation === 'checked' ? 'unchecked' : 'checked');
   };
   useEffect(() => {
-    axios.get('http://10.0.2.2:8000/api/getlaundries').then(response => {
+    axios.get('https://palabaph.com/api/getlaundries').then(response => {
       setLaundryShops(response.data.data);
       console.log(response.data.data);
     });

@@ -20,14 +20,14 @@ const RiderOrders = () => {
     const formdata = new FormData();
     formdata.append('laundry_id', user.laundryId);
     axios
-      .post('http://10.0.2.2:8000/api/getlaundryorders', formdata)
+      .post('https://palabaph.com/api/getlaundryorders', formdata)
       .then(response => {
         console.log(response.data);
         setPendingOrders(response.data);
       });
     const interval = setInterval(() => {
       axios
-        .post('http://10.0.2.2:8000/api/getlaundryorders', formdata)
+        .post('https://palabaph.com/api/getlaundryorders', formdata)
         .then(response => {
           console.log(response.data);
           setPendingOrders(response.data);

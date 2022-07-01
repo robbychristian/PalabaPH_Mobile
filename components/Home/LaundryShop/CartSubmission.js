@@ -62,13 +62,13 @@ const CartSubmission = () => {
     const formdata = new FormData();
     formdata.append('id', laundryId);
     axios
-      .post('http://10.0.2.2:8000/api/gettimeslots', formdata)
+      .post('https://palabaph.com/api/gettimeslots', formdata)
       .then(response => {
         setAvailableTimeSlot(response.data);
       });
 
     axios
-      .get('http://10.0.2.2:8000/api/getallmachines/' + laundryId)
+      .get('https://palabaph.com/api/getallmachines/' + laundryId)
       .then(response => {
         setAvailableMachines(response.data);
       });
@@ -78,7 +78,7 @@ const CartSubmission = () => {
     const getAllReservationForm = new FormData();
     getAllReservationForm.append('laundry_id', laundryId);
     axios
-      .post('http://10.0.2.2:8000/api/getallreservation', getAllReservationForm)
+      .post('https://palabaph.com/api/getallreservation', getAllReservationForm)
       .then(response => {
         setAllReservation(response.data);
       });
@@ -126,7 +126,7 @@ const CartSubmission = () => {
             washReservation.append('status', 'Pending');
             axios
               .post(
-                'http://10.0.2.2:8000/api/createreservation',
+                'https://palabaph.com/api/createreservation',
                 washReservation,
               )
               .then(response => {
@@ -149,7 +149,7 @@ const CartSubmission = () => {
             dryReservation.append('status', 'Pending');
             axios
               .post(
-                'http://10.0.2.2:8000/api/createreservation',
+                'https://palabaph.com/api/createreservation',
                 dryReservation,
               )
               .then(response => {
@@ -175,7 +175,7 @@ const CartSubmission = () => {
       washReservation.append('time_end', timeSlot.substring(10, 17));
       washReservation.append('status', 'Pending');
       axios
-        .post('http://10.0.2.2:8000/api/createreservation', washReservation)
+        .post('https://palabaph.com/api/createreservation', washReservation)
         .then(response => {
           console.log(response.data);
         });
@@ -192,7 +192,7 @@ const CartSubmission = () => {
       dryReservation.append('time_end', timeSlot.substring(10, 17));
       dryReservation.append('status', 'Pending');
       axios
-        .post('http://10.0.2.2:8000/api/createreservation', dryReservation)
+        .post('https://palabaph.com/api/createreservation', dryReservation)
         .then(response => {
           navigation.navigate('Home');
         });
@@ -212,7 +212,7 @@ const CartSubmission = () => {
     orderForm.append('segregation_type', segregation);
     orderForm.append('status', 'Pending');
     axios
-      .post('http://10.0.2.2:8000/api/ordermobile', orderForm)
+      .post('https://palabaph.com/api/ordermobile', orderForm)
       .then(response => {
         console.log(response.data);
         const itemData = [];
@@ -222,7 +222,7 @@ const CartSubmission = () => {
           itemData[i].append('item_name', itemNames[i]);
           itemData[i].append('item_price', itemPrices[i]);
           axios
-            .post('http://10.0.2.2:8000/api/ordereditems', itemData[i])
+            .post('https://palabaph.com/api/ordereditems', itemData[i])
             .then(response => {
               setLoading(false);
               navigation.navigate('Home');

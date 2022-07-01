@@ -25,7 +25,7 @@ const LoginOwner = () => {
     formData.append('email', email);
     formData.append('password', pass);
     axios
-      .post('http://10.0.2.2:8000/api/ownerlogin', formData)
+      .post('https://palabaph.com/api/ownerlogin', formData)
       .then(response => {
         if (response.data === 'password correct') {
           Alert.alert('Success!', 'Logged in successfully!');

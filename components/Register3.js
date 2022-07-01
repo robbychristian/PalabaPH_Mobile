@@ -50,7 +50,7 @@ const Register3 = () => {
       formdata.append('pass', pass);
       formdata.append('customer', true);
       axios
-        .post('http://10.0.2.2:8000/api/registercustomer', formdata)
+        .post('https://palabaph.com/api/registercustomer', formdata)
         .then(response => {
           setLoading(false);
           Alert.alert('Success!', 'You have now registered your account!');

@@ -49,7 +49,7 @@ const AccountDetails = () => {
       formdata.append('contact_no', cnum);
       formdata.append('pass', pass);
       axios
-        .post('http://10.0.2.2:8000/api/editcustomerprofile', formdata)
+        .post('https://palabaph.com/api/editcustomerprofile', formdata)
         .then(response => {
           setLoading(false);
           console.log(response.data);

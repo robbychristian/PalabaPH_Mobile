@@ -19,7 +19,7 @@ const IndividualOrder = () => {
     const formdata = new FormData();
     formdata.append('id', orderId);
     axios
-      .post('http://10.0.2.2:8000/api/getspecificorder', formdata)
+      .post('https://palabaph.com/api/getspecificorder', formdata)
       .then(response => {
         setOrder(response.data);
         console.log(response.data);
@@ -31,7 +31,7 @@ const IndividualOrder = () => {
     const formdata = new FormData();
     formdata.append('id', orderId);
     axios
-      .post('http://10.0.2.2:8000/api/acceptorder', formdata)
+      .post('https://palabaph.com/api/acceptorder', formdata)
       .then(response => {
         Alert.alert(
           'Order Accepted!',

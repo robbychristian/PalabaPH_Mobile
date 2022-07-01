@@ -97,7 +97,7 @@ const Order = () => {
         formdata.append('token', token);
 
         axios
-          .post('http://10.0.2.2:8000/api/updatetoken', formdata)
+          .post('https://palabaph.com/api/updatetoken', formdata)
           .then(response => {
             console.log(response.data);
           });
@@ -107,7 +107,7 @@ const Order = () => {
     });
 
     axios
-      .get('http://10.0.2.2:8000/api/showcustomerorder/' + user.id)
+      .get('https://palabaph.com/api/showcustomerorder/' + user.id)
       .then(response => {
         setOrders(response.data);
       });
@@ -122,7 +122,7 @@ const Order = () => {
     formdata.append('mobile_order_id', orderId);
     formdata.append('image_uri', imageUri);
     axios
-      .post('http://10.0.2.2:8000/api/updatepaymentstatus', formdata)
+      .post('https://palabaph.com/api/updatepaymentstatus', formdata)
       .then(response => {
         console.log(response.data);
       });
