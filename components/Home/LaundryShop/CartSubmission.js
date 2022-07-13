@@ -225,6 +225,10 @@ const CartSubmission = () => {
             .post('https://palabaph.com/api/ordereditems', itemData[i])
             .then(response => {
               setLoading(false);
+              Alert.alert(
+                'Success!',
+                'Wait for a rider to pick up your order!',
+              );
               navigation.navigate('Home');
             })
             .catch(e => {

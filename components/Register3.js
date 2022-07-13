@@ -30,11 +30,13 @@ const Register3 = () => {
         'Some inputs are empty!',
         'Please fill in the fields that are empty.',
       );
+      setLoading(false);
     } else if (pass != repass) {
       Alert.alert(
         'Password Mismatch!',
         'Please make sure your passwords match.',
       );
+      setLoading(false);
     } else {
       const formdata = new FormData();
       formdata.append('fname', register.fname);

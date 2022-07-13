@@ -67,7 +67,7 @@ const RiderOrders = () => {
               </Card>
             </View>
           ) : (
-            <View style={{alignItems: 'center', paddingVertical: 10}} key={id}>
+            <View style={{alignItems: 'center', paddingVertical: 10}}>
               {pendingOrders.map((item, id) => {
                 return (
                   <Card elevation={5} mode="elevated" style={{width: '90%'}}>

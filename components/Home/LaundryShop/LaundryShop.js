@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   View,
   Text,
@@ -11,12 +11,14 @@ import {Title, ToggleButton} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
 import moment from 'moment';
+import {UserContext} from '../../../provider/UserProvider';
 const LaundryShop = () => {
   const navigation = useNavigation();
   const [laundryShops, setLaundryShops] = useState([]);
   const [walkIn, setWalkIn] = useState('checked');
   const [dropOff, setDropOff] = useState('checked');
   const [pickup, setPickup] = useState('checked');
+  const user = useContext(UserContext);
   const [reservation, setReservation] = useState('checked');
   const onWalkInToggle = value => {
     setWalkIn(walkIn === 'checked' ? 'unchecked' : 'checked');
@@ -122,12 +124,22 @@ const LaundryShop = () => {
                     individualLaundry(item.id);
                   }}>
                   <Image
-                    source={require('../../../assets/Laundry1.jpg')}
+                    source={{
+                      uri:
+                        'https://palabaph.com/PalabaPH_New_v2-main/storage/app/laundry_img_pics/' +
+                        item.user_id +
+                        '/' +
+                        item.laundry_img,
+                    }}
                     style={{height: 350, width: 350, borderRadius: 30}}
                   />
                   <View style={{width: 350}}>
                     <Text
-                      style={{fontWeight: 'bold', fontSize: 18, color: '#000'}}>
+                      style={{
+                        fontWeight: 'bold',
+                        fontSize: 18,
+                        color: '#000',
+                      }}>
                       {item.name}
                     </Text>
                     <Text style={{fontWeight: '300', fontSize: 16}}>

@@ -19,10 +19,16 @@ import Home from './components/Home/Home';
 import AccountDetails from './components/Home/Account/AccountDetails';
 import IndividualLaundryShop from './components/Home/LaundryShop/IndividualLaundryShop';
 import CartSubmission from './components/Home/LaundryShop/CartSubmission';
+import Complaints from './components/Home/LaundryShop/Complaints/Complaints';
+import AddComplaints from './components/Home/LaundryShop/Complaints/AddComplaints';
+import IndividualComplaints from './components/Home/LaundryShop/Complaints/IndividualComplaints';
+import Feedbacks from './components/Home/LaundryShop/Feedback/Feedbacks';
+import IndividualFeedbacks from './components/Home/LaundryShop/Feedback/IndividualFeedbacks';
 
 //RIDER STACK
 import HomeRider from './components/Riders/HomeRider';
 import IndividualOrder from './components/Riders/Orders/IndividualOrder';
+import AddFeedback from './components/Home/LaundryShop/Feedback/AddFeedback';
 
 const WelcomeStack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
@@ -38,6 +44,18 @@ const HomeStackScreen = () => {
         component={IndividualLaundryShop}
       />
       <HomeStack.Screen name="CartSubmission" component={CartSubmission} />
+      <HomeStack.Screen name="Complaints" component={Complaints} />
+      <HomeStack.Screen name="AddComplaints" component={AddComplaints} />
+      <HomeStack.Screen
+        name="IndividualComplaints"
+        component={IndividualComplaints}
+      />
+      <HomeStack.Screen name="Feedbacks" component={Feedbacks} />
+      <HomeStack.Screen name="AddFeedback" component={AddFeedback} />
+      <HomeStack.Screen
+        name="IndividualFeedbacks"
+        component={IndividualFeedbacks}
+      />
     </HomeStack.Navigator>
   );
 };

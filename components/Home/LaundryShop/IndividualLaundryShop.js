@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {
   View,
   StyleSheet,
@@ -17,6 +17,7 @@ import {
 } from 'react-native-paper';
 import moment from 'moment';
 import axios from 'axios';
+import {UserContext} from '../../../provider/UserProvider';
 
 const ItemComponent = props => {
   return (
@@ -35,6 +36,13 @@ const ItemComponent = props => {
 const IndividualLaundryShop = () => {
   const route = useRoute();
   const navigation = useNavigation();
+  const user = useContext(UserContext);
+
+  //FAB Group
+  const [fabState, setFabState] = useState(false);
+  const changeFabState = () => setFabState(!fabState);
+
+  const [disableFab, setDisableFab] = useState(false);
 
   //FETCHING DATA
   const [laundryData, setLaundryData] = useState([]);
@@ -65,6 +73,14 @@ const IndividualLaundryShop = () => {
       )
       .then(response => {
         setLaundryData(response.data);
+        if (
+          response.data[0].pick_up == false &&
+          response.data[0].pick_up == false
+        ) {
+          setDisableFab(true);
+        } else {
+          setDisableFab(false);
+        }
       });
 
     axios
@@ -99,7 +115,7 @@ const IndividualLaundryShop = () => {
     console.log(itemPrice);
     console.log(itemName);
     console.log(totalPrice);
-  }, [itemNumber]);
+  }, [itemNumber, disableFab]);
 
   // ============================FUNCTIONS============================ //
 
@@ -130,7 +146,13 @@ const IndividualLaundryShop = () => {
           return (
             <View style={styles.headerContainer}>
               <Image
-                source={require('../../../assets/Laundry1.jpg')}
+                source={{
+                  uri:
+                    'https://palabaph.com/PalabaPH_New_v2-main/storage/app/laundry_img_pics/' +
+                    item.user_id +
+                    '/' +
+                    item.laundry_img,
+                }}
                 style={{height: 200, width: '100%'}}
               />
               <View style={{paddingHorizontal: 30, paddingVertical: 20}}>
@@ -208,7 +230,13 @@ const IndividualLaundryShop = () => {
                 style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <View style={{paddingVertical: 10, flexDirection: 'row'}}>
                   <Image
-                    source={require('../../../assets/AccountDetails1.png')}
+                    source={{
+                      uri:
+                        'https://palabaph.com/PalabaPH_New_v2-main/storage/app/img_service/' +
+                        item.user_id +
+                        '/' +
+                        item.add_serv_image_service,
+                    }}
                     style={{height: 75, width: 75}}
                   />
                   <View
@@ -237,7 +265,7 @@ const IndividualLaundryShop = () => {
         </View>
         {/* ======================= ADDITIONAL SERVICE END ======================= */}
 
-        {/* ======================= ADDITIONAL SERVICES START ======================= */}
+        {/* ======================= ADDITIONAL PRODUCT START ======================= */}
         <View style={styles.servicesContainer}>
           <Headline style={{fontWeight: '700', fontSize: 25}}>
             Additional Products
@@ -248,7 +276,13 @@ const IndividualLaundryShop = () => {
                 style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                 <View style={{paddingVertical: 10, flexDirection: 'row'}}>
                   <Image
-                    source={require('../../../assets/AccountDetails1.png')}
+                    source={{
+                      uri:
+                        'https://palabaph.com/PalabaPH_New_v2-main/storage/app/img_product/' +
+                        item.user_id +
+                        '/' +
+                        item.add_prod_image_product,
+                    }}
                     style={{height: 75, width: 75}}
                   />
                   <View
@@ -359,12 +393,74 @@ const IndividualLaundryShop = () => {
           </TouchableOpacity>
         </View>
       </Modal>
-      <FAB
-        style={styles.fab}
-        color="#fff"
-        icon="cart"
-        onPress={() => showModal()}
-      />
+      {disableFab ? (
+        <FAB.Group
+          open={fabState}
+          icon={fabState ? 'calendar-today' : 'plus'}
+          actions={[
+            {
+              icon: 'star',
+              label: 'Feedback',
+              onPress: () =>
+                navigation.navigate('Feedbacks', {
+                  laundryId: route.params.laundryId,
+                }),
+            },
+            {
+              icon: 'email',
+              label: 'Complaints',
+              onPress: () =>
+                navigation.navigate('Complaints', {
+                  laundryId: route.params.laundryId,
+                }),
+            },
+          ]}
+          onStateChange={changeFabState}
+          onPress={() => {
+            if (fabState) {
+              console.log('opened fab');
+            }
+          }}
+          style={styles.fabGroupStyle}
+          fabStyle={styles.fab}
+        />
+      ) : (
+        <FAB.Group
+          open={fabState}
+          icon={fabState ? 'calendar-today' : 'plus'}
+          actions={[
+            {
+              icon: 'star',
+              label: 'Feedback',
+              onPress: () =>
+                navigation.navigate('Feedbacks', {
+                  laundryId: route.params.laundryId,
+                }),
+            },
+            {
+              icon: 'email',
+              label: 'Complaints',
+              onPress: () =>
+                navigation.navigate('Complaints', {
+                  laundryId: route.params.laundryId,
+                }),
+            },
+            {
+              icon: 'cart',
+              label: 'Cart',
+              onPress: () => showModal(),
+            },
+          ]}
+          onStateChange={changeFabState}
+          onPress={() => {
+            if (fabState) {
+              console.log('opened fab');
+            }
+          }}
+          style={styles.fabGroupStyle}
+          fabStyle={styles.fab}
+        />
+      )}
       {cartArray.length === 0 ? null : (
         <Badge
           size={20}
@@ -422,11 +518,15 @@ const styles = StyleSheet.create({
   },
 
   fab: {
+    backgroundColor: '#272f56',
+  },
+  fabGroupStyle: {
     position: 'absolute',
-    margin: 16,
+    marginBottom: 16,
     right: 0,
     bottom: 0,
-    backgroundColor: '#272f56',
+    marginTop: '210%',
+    color: '#fff',
   },
   modalView: {
     margin: 10,

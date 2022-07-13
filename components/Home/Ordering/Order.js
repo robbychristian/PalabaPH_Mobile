@@ -118,13 +118,23 @@ const Order = () => {
   }, [itemsPerPage]);
 
   const submitPayment = () => {
+    let file = {
+      uri: imageUri,
+      type: 'multipart/form-data',
+      name: imageName,
+    };
     const formdata = new FormData();
     formdata.append('mobile_order_id', orderId);
-    formdata.append('image_uri', imageUri);
+    formdata.append('user_id', user.id);
+    formdata.append('imageFile', file);
+    formdata.append('status', 'paid');
     axios
       .post('https://palabaph.com/api/updatepaymentstatus', formdata)
       .then(response => {
-        console.log(response.data);
+        Alert.alert(
+          'Image Uploaded!',
+          'The cashless receipt has been uploaded!',
+        );
       });
   };
 
@@ -182,8 +192,9 @@ const Order = () => {
               alignSelf: 'center',
               height: '80%',
             }}>
-            <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+            <TouchableOpacity
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+              onPress={() => uploadPhoto()}>
               <Image
                 source={{uri: imageUri}}
                 style={{
@@ -194,7 +205,7 @@ const Order = () => {
               <Button onPress={() => submitPayment()}>
                 <Caption style={{color: '#000'}}>Submit</Caption>
               </Button>
-            </View>
+            </TouchableOpacity>
           </Modal>
         ) : (
           <Modal
