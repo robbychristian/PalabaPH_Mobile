@@ -10,9 +10,9 @@ import {
 import {Title, Paragraph, Modal} from 'react-native-paper';
 import Icon from 'react-native-vector-icons/dist/MaterialCommunityIcons';
 import {useNavigation} from '@react-navigation/native';
-import {UserContext} from '../../../provider/UserProvider';
+import { UserContext } from '../../provider/UserProvider';
 
-const Account = () => {
+const Accounts = () => {
   const navigation = useNavigation();
   const user = useContext(UserContext);
   const [termsAndCondition, setTermsAndCondition] = useState(false);
@@ -30,7 +30,7 @@ const Account = () => {
             marginVertical: 10,
           }}>
           <Image
-            source={require('../../../assets/AccountDetails1.png')}
+            source={require('../../assets/AccountDetails1.png')}
             style={{height: 50, width: 50}}></Image>
         </TouchableOpacity>
         <View
@@ -99,4 +99,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Account;
+export default Accounts;

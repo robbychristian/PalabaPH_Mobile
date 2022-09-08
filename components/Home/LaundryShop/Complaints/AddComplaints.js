@@ -1,9 +1,10 @@
-import React, {useState, useContext} from 'react';
+import React, {useState, useContext, useRef} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Alert} from 'react-native';
 import {Button, Headline, Caption, TextInput} from 'react-native-paper';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {UserContext} from '../../../../provider/UserProvider';
+import {Picker} from '@react-native-picker/picker';
 import axios from 'axios';
 
 const AddComplaints = () => {
@@ -14,6 +15,11 @@ const AddComplaints = () => {
   const [imageUri, setImageUri] = useState('');
   const [imageName, setImageName] = useState('');
   const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('');
+  const categoryRef = useRef();
+  const openCategory = () => {
+    categoryRef.current.focus();
+  };
   const [comment, setComment] = useState('');
   const laundryId = route.params.laundryId;
   const userId = user.id;
@@ -55,6 +61,7 @@ const AddComplaints = () => {
     formdata.append('laundry_id', laundryId);
     formdata.append('user_id', userId);
     formdata.append('comment', comment);
+    formdata.append('category', category);
     formdata.append('image_file', imageFile);
 
     axios
@@ -69,9 +76,13 @@ const AddComplaints = () => {
           'The complaint has been sent to the laundry shop!',
         );
         navigation.goBack();
+        // console.log(response.data)
       })
       .catch(e => {
-        console.log(e);
+        Alert.alert(
+          'Error!',
+          'There were some errors in sending the complaints! Please try again later.'
+        )
       });
   };
   return (
@@ -119,6 +130,32 @@ const AddComplaints = () => {
           onChangeText={setComment}
           value={comment}
         />
+        <TouchableOpacity
+          style={styles.pickerContainer}
+          onPress={() => {
+            openCategory();
+          }}>
+          <TextInput
+            mode="outlined"
+            label="Category"
+            style={styles.input}
+            editable={false}
+            value={category}
+            outlineColor="#808080"
+            activeOutlineColor="#808080"
+            onChangeText={setCategory}
+          />
+        </TouchableOpacity>
+        <Picker
+          ref={categoryRef}
+          style={{opacity: 0, height: 0, display: 'none'}}
+          mode="dialog"
+          selectedValue={category}
+          onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}>
+          <Picker.Item label="Back Job" value="Back Job" />
+          <Picker.Item label="Missing Items" value="Missing Items" />
+          <Picker.Item label="Improper Handling" value="Improper Handling" />
+        </Picker>
 
         <TouchableOpacity
           style={{justifyContent: 'center', width: '75%'}}
@@ -180,6 +217,12 @@ const styles = StyleSheet.create({
     width: '50%',
     backgroundColor: '#272f56',
     color: '#fff',
+  },
+  pickerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: '#fff',
+    width: '100%',
   },
 });
 

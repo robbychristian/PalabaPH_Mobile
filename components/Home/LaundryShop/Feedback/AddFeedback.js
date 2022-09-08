@@ -1,21 +1,27 @@
-import React, {useEffect, useContext, useState} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import React, {useRef, useContext, useState} from 'react';
+import {View, Text, StyleSheet, Alert, TouchableOpacity} from 'react-native';
 import {Button, Headline, Caption, TextInput} from 'react-native-paper';
 import {useRoute, useNavigation} from '@react-navigation/native';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {UserContext} from '../../../../provider/UserProvider';
 import axios from 'axios';
+import {Picker} from '@react-native-picker/picker';
 import {Rating, AirbnbRating} from 'react-native-ratings';
 
 const AddFeedback = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const user = useContext(UserContext);
+  const categoryRef = useRef();
+  const openCategory = () => {
+    categoryRef.current.focus();
+  };
 
   //form
   const [rating, setRating] = useState('');
   const [title, setTitle] = useState('');
   const [comment, setComment] = useState('');
+  const [category, setCategory] = useState('');
   const laundryId = route.params.laundryId;
   const userId = user.id;
   const uploadPhoto = () => {
@@ -49,12 +55,18 @@ const AddFeedback = () => {
       const formdata = new FormData();
       formdata.append('laundry_id', route.params.laundryId);
       formdata.append('user_id', user.id);
+      formdata.append('category', category);
       formdata.append('rating', rating);
       formdata.append('comment', comment);
       axios
         .post('https://palabaph.com/api/addfeedback', formdata)
         .then(response => {
-          navigation.navigate('Feedback');
+          // console.log(response.data)
+          navigation.goBack();
+          Alert.alert(
+            'Feedback Sent!',
+            'Your feedback has been sent! A reply will be sent to you after the review of the feedback!',
+          );
         })
         .catch(e => {
           console.log(e);
@@ -104,6 +116,32 @@ const AddFeedback = () => {
           onChangeText={setTitle}
           value={title}
         />
+        <TouchableOpacity
+          style={styles.pickerContainer}
+          onPress={() => {
+            openCategory();
+          }}>
+          <TextInput
+            mode="outlined"
+            label="Category"
+            style={styles.input}
+            editable={false}
+            value={category}
+            outlineColor="#808080"
+            activeOutlineColor="#808080"
+            onChangeText={setCategory}
+          />
+        </TouchableOpacity>
+        <Picker
+          ref={categoryRef}
+          style={{opacity: 0, height: 0, display: 'none'}}
+          mode="dialog"
+          selectedValue={category}
+          onValueChange={(itemValue, itemIndex) => setCategory(itemValue)}>
+          <Picker.Item label="Quality Service" value="Quality Service" />
+          <Picker.Item label="Affordable" value="Affordable" />
+          <Picker.Item label="Improvements" value="Improvements" />
+        </Picker>
         <TextInput
           mode="outlined"
           style={styles.input}
@@ -155,6 +193,12 @@ const styles = StyleSheet.create({
     width: '50%',
     backgroundColor: '#272f56',
     color: '#fff',
+  },
+  pickerContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    color: '#fff',
+    width: '100%',
   },
 });
 

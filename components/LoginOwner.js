@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useContext} from 'react';
 import {
   View,
   Image,
@@ -12,9 +12,11 @@ import {
 import {TextInput, Button, Subheading, Headline} from 'react-native-paper';
 import {useNavigation} from '@react-navigation/native';
 import axios from 'axios';
+import {UserContext} from '../provider/UserProvider';
 
 const LoginOwner = () => {
   const navigation = useNavigation();
+  const user = useContext(UserContext);
 
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
@@ -27,8 +29,17 @@ const LoginOwner = () => {
     axios
       .post('https://palabaph.com/api/ownerlogin', formData)
       .then(response => {
-        if (response.data === 'password correct') {
+        if (response.data.response === 'password correct') {
           Alert.alert('Success!', 'Logged in successfully!');
+          user.id = response.data.data[0].user_id;
+          user.fname = response.data.data[0].first_name;
+          user.mname = response.data.data[0].middle_name;
+          user.lname = response.data.data[0].last_name;
+          user.cnum = response.data.data[0].contact_no;
+          user.email = response.data.data[0].email;
+          user.pass = response.data.data[0].password;
+          user.laundryId = response.data.data[0].id;
+          navigation.navigate('OwnerStack');
         } else {
           Alert.alert('Error!', 'Email/Password is incorrect!');
         }

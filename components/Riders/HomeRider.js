@@ -9,12 +9,12 @@ const HomeRider = () => {
   const [index, setIndex] = useState(0);
   const [routes] = useState([
     {key: 'orders', title: 'Orders', icon: 'tshirt-crew'},
-    {key: 'history', title: 'History', icon: 'tshirt-crew'},
+    {key: 'account', title: 'Account', icon: 'account'},
   ]);
 
   const renderScene = BottomNavigation.SceneMap({
     orders: RiderOrders,
-    history: RiderOrdersHistory,
+    account: RiderOrdersHistory,
   });
   return (
     <BottomNavigation

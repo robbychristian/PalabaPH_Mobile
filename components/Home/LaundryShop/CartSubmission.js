@@ -87,7 +87,7 @@ const CartSubmission = () => {
         if (
           timeSlot.substring(0, 7) == item.time_start &&
           timeSlot.substring(10, 17) == item.time_end &&
-          chosenMachineWash.substring(0, 1) == item.machine_id &&
+          chosenMachineWash.substring(2) == item.machine_id &&
           moment().add(1, 'days').format('MM-DD-YYYY') == item.reservation_date
         ) {
           Alert.alert(
@@ -97,7 +97,7 @@ const CartSubmission = () => {
         } else if (
           timeSlot.substring(0, 7) == item.time_start &&
           timeSlot.substring(10, 17) == item.time_end &&
-          chosenMachineDry.substring(0, 1) == item.machine_id &&
+          chosenMachineDry.substring(2) == item.machine_id &&
           moment().add(1, 'days').format('MM-DD-YYYY') == item.reservation_date
         ) {
           Alert.alert(
@@ -115,7 +115,7 @@ const CartSubmission = () => {
             washReservation.append('user_id', user.id);
             washReservation.append(
               'machine_id',
-              chosenMachineWash.substring(0, 1),
+              chosenMachineWash.substring(2),
             );
             washReservation.append(
               'reservation_date',
@@ -136,10 +136,7 @@ const CartSubmission = () => {
             const dryReservation = new FormData();
             dryReservation.append('laundry_id', laundryId);
             dryReservation.append('user_id', user.id);
-            dryReservation.append(
-              'machine_id',
-              chosenMachineDry.substring(0, 1),
-            );
+            dryReservation.append('machine_id', chosenMachineDry.substring(2));
             dryReservation.append(
               'reservation_date',
               moment().add(1, 'days').format('MM-DD-YYYY'),

@@ -38,19 +38,38 @@ const IndividualComplaints = () => {
                 style={{
                   width: '100%',
                   paddingHorizontal: 15,
-                  paddingVertical: 10,
+                  paddingVertical: 5,
                 }}>
                 <Headline style={{fontWeight: 'bold', color: '#272f56'}}>
                   Comment
                 </Headline>
                 <Caption style={{fontSize: 15}}>{item.comment}</Caption>
               </View>
+              <View
+                style={{
+                  width: '100%',
+                  paddingHorizontal: 15,
+                  paddingVertical: 5,
+                }}>
+                <Headline style={{fontWeight: 'bold', color: '#272f56'}}>
+                  Status
+                </Headline>
+                {item.status == 'Pending' ? (
+                  <Caption style={{fontSize: 15, color: '#FACC15'}}>
+                    Pending
+                  </Caption>
+                ) : (
+                  <Caption style={{fontSize: 15, color: 'green'}}>
+                    Resolved
+                  </Caption>
+                )}
+              </View>
               {replyStatus == true ? (
                 <View
                   style={{
                     width: '100%',
                     paddingHorizontal: 15,
-                    paddingVertical: 10,
+                    paddingVertical: 5,
                   }}>
                   <Headline style={{fontWeight: 'bold', color: '#272f56'}}>
                     Reply
@@ -62,7 +81,7 @@ const IndividualComplaints = () => {
                   style={{
                     width: '100%',
                     paddingHorizontal: 15,
-                    paddingVertical: 10,
+                    paddingVertical: 5,
                   }}>
                   <Headline style={{fontWeight: 'bold', color: '#272f56'}}>
                     Reply

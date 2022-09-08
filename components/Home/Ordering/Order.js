@@ -1,4 +1,4 @@
-import React, {useEffect, useContext, useState} from 'react';
+import React, {useEffect, useContext, useState, useRef} from 'react';
 import {
   View,
   TouchableOpacity,
@@ -36,11 +36,30 @@ const Order = () => {
   // FOR MODAL
   const [modalVisible, setModalVisible] = useState(false);
   const [orderId, setOrderId] = useState('');
-  const show = id => {
+  const [laundryId, setLaundryId] = useState('');
+  const [gcashUri, setGcashUri] = useState('');
+  const show = (id, laundryId) => {
     setModalVisible(true);
     setOrderId(id);
+    const formdata = new FormData();
+    formdata.append('laundry_id', laundryId);
+    axios
+      .post('https://palabaph.com/api/getqrcode', formdata)
+      .then(response => {
+        setGcashUri(response.data.laundryQr);
+        setLaundryId(response.data.laundryId);
+      });
   };
-  const hide = () => setModalVisible(false);
+
+  const cancelStatus = () => {
+    setImageStatus(false);
+  };
+
+  const hide = () => {
+    setModalVisible(false);
+    setGcashUri('');
+    setLaundryId('');
+  };
   const [imageStatus, setImageStatus] = useState(false);
   const [imageUri, setImageUri] = useState('');
   const [imageName, setImageName] = useState('');
@@ -110,12 +129,37 @@ const Order = () => {
       .get('https://palabaph.com/api/showcustomerorder/' + user.id)
       .then(response => {
         setOrders(response.data);
+        console.log(response.data);
       });
+      
+    const interval = setInterval(() => {
+      axios
+      .get('https://palabaph.com/api/showcustomerorder/' + user.id)
+      .then(response => {
+        setOrders(response.data);
+        console.log(response.data);
+      });
+    }, 2500)
 
     setPage(0);
 
-    return unsubscribe;
-  }, [itemsPerPage]);
+    return () => {
+      unsubscribe
+      clearInterval(interval)
+    };
+  }, [gcashUri]);
+
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     axios
+  //     .get('https://palabaph.com/api/showcustomerorder/' + user.id)
+  //     .then(response => {
+  //       setOrders(response.data);
+  //       console.log(response.data);
+  //     });
+  //   }, 2500)
+  //   return () => clearInterval(interval)
+  // }, [])
 
   const submitPayment = () => {
     let file = {
@@ -154,7 +198,7 @@ const Order = () => {
             <DataTable.Title>Status</DataTable.Title>
           </DataTable.Header>
           {orders.map((items, id) => {
-            if (items.status == 'Pending') {
+            if (items.payment_status == 'Paid') {
               return (
                 <DataTable.Row key={id}>
                   <DataTable.Cell>
@@ -162,21 +206,35 @@ const Order = () => {
                   </DataTable.Cell>
                   <DataTable.Cell>{items.commodity_type}</DataTable.Cell>
                   <DataTable.Cell>{items.total_price}</DataTable.Cell>
-                  <DataTable.Cell>{items.status}</DataTable.Cell>
+                  <DataTable.Cell>{items.payment_status}</DataTable.Cell>
                 </DataTable.Row>
               );
-            } else {
+            } /*else if (items.payment_status == 'Accepted') {
               return (
-                <TouchableOpacity onPress={() => show(items.id)}>
-                  <DataTable.Row key={id}>
-                    <DataTable.Cell>
-                      {moment(items.created_at).format('hh:mmA')}
-                    </DataTable.Cell>
-                    <DataTable.Cell>{items.commodity_type}</DataTable.Cell>
-                    <DataTable.Cell>{items.total_price}</DataTable.Cell>
-                    <DataTable.Cell>Upload here</DataTable.Cell>
-                  </DataTable.Row>
-                </TouchableOpacity>
+              <DataTable.Row key={id}>
+                <DataTable.Cell>
+                  {moment(items.created_at).format('hh:mmA')}
+                </DataTable.Cell>
+                <DataTable.Cell>{items.commodity_type}</DataTable.Cell>
+                <DataTable.Cell>{items.total_price}</DataTable.Cell>
+                <DataTable.Cell>{items.status}</DataTable.Cell>
+              </DataTable.Row>
+              );
+            } */ else {
+              return (
+                <View>
+                  <TouchableOpacity
+                    onPress={() => show(items.id, items.laundry_id)}>
+                    <DataTable.Row key={id}>
+                      <DataTable.Cell>
+                        {moment(items.created_at).format('hh:mmA')}
+                      </DataTable.Cell>
+                      <DataTable.Cell>{items.commodity_type}</DataTable.Cell>
+                      <DataTable.Cell>{items.total_price}</DataTable.Cell>
+                      <DataTable.Cell>Upload here</DataTable.Cell>
+                    </DataTable.Row>
+                  </TouchableOpacity>
+                </View>
               );
             }
           })}
@@ -188,12 +246,17 @@ const Order = () => {
             contentContainerStyle={{
               backgroundColor: '#fff',
               width: '80%',
-              padding: 30,
+              paddingVertical: 30,
+              paddingHorizontal: 20,
               alignSelf: 'center',
               height: '80%',
             }}>
             <TouchableOpacity
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
               onPress={() => uploadPhoto()}>
               <Image
                 source={{uri: imageUri}}
@@ -202,9 +265,19 @@ const Order = () => {
                   width: '100%',
                   marginTop: 20,
                 }}></Image>
-              <Button onPress={() => submitPayment()}>
-                <Caption style={{color: '#000'}}>Submit</Caption>
-              </Button>
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                }}>
+                <Button onPress={() => submitPayment()}>
+                  <Caption style={{color: '#000'}}>Submit</Caption>
+                </Button>
+                <Button onPress={() => cancelStatus()}>
+                  <Caption style={{color: 'red'}}>Cancel</Caption>
+                </Button>
+              </View>
             </TouchableOpacity>
           </Modal>
         ) : (
@@ -220,9 +293,32 @@ const Order = () => {
             }}>
             <TouchableOpacity
               onPress={() => uploadPhoto()}
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <Caption>Click here to upload payment receipt</Caption>
+              style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Image
+                source={{
+                  uri:
+                    'https://palabaph.com/PalabaPH_New_v2-main/storage/app/gcash_image/' +
+                    laundryId +
+                    '/' +
+                    gcashUri,
+                }}
+                style={{
+                  height: '95%',
+                  width: '95%',
+                  margin: 15,
+                }}></Image>
             </TouchableOpacity>
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Caption>Click the QR to submit the receipt</Caption>
+            </View>
           </Modal>
         )}
       </View>

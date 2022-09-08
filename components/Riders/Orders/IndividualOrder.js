@@ -15,6 +15,17 @@ const IndividualOrder = () => {
   const route = useRoute();
   const [order, setOrder] = useState([]);
   useEffect(() => {
+    const interval = setInterval(() => {
+      const orderId = route.params.orderId;
+      const formdata = new FormData();
+      formdata.append('id', orderId);
+      axios
+        .post('https://palabaph.com/api/getspecificorder', formdata)
+        .then(response => {
+          setOrder(response.data);
+          console.log(response.data);
+        });
+    }, 3000)
     const orderId = route.params.orderId;
     const formdata = new FormData();
     formdata.append('id', orderId);
@@ -24,6 +35,7 @@ const IndividualOrder = () => {
         setOrder(response.data);
         console.log(response.data);
       });
+      return () => clearInterval(interval)
   }, []);
 
   const acceptOrder = id => {
@@ -79,6 +91,11 @@ const IndividualOrder = () => {
                   P{item.total_price}
                 </Text>
               </Text>
+              {item.status == "Accepted" ? (
+                <View style={{ backgroundColor: "#6E85F5", paddingVertical: 10, paddingHorizontal: 15 }}>
+                  <Text style={{ color: "#fff" }}>Accepted</Text>
+                </View>
+              ) : (
               <TouchableOpacity
                 style={{
                   backgroundColor: '#6E85F5',
@@ -88,15 +105,11 @@ const IndividualOrder = () => {
                 onPress={() => acceptOrder(item.id)}>
                 <Text style={{color: '#fff'}}>Accept</Text>
               </TouchableOpacity>
+              )}
             </View>
           </View>
         );
       })}
-      <View style={styles.bodyContainer}>
-        <Image
-          source={require('../../../assets/Gcash_QR.jpg')}
-          style={{height: '95%', width: '95%', margin: 15}}></Image>
-      </View>
     </View>
   );
 };

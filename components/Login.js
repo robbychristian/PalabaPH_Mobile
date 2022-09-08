@@ -48,8 +48,11 @@ const Login = () => {
             user.barangay = response.data.data[0].barangay;
             user.street = response.data.data[0].street;
             user.email = response.data.data[0].email;
-            user.pass = response.data.data[0].pass;
+            user.pass = response.data.data[0].password;
             navigation.navigate('HomeStack');
+          } else if (response.data.response == 'email') {
+            setLoading(false);
+            Alert.alert('Verify Email!', 'Please verify your email first!');
           } else {
             setLoading(false);
             console.log(response.data);

@@ -32,7 +32,7 @@ const RiderOrders = () => {
           console.log(response.data);
           setPendingOrders(response.data);
         });
-    }, 5000);
+    }, 10000);
     return () => {
       clearInterval(interval);
     };

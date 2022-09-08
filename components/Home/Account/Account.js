@@ -51,10 +51,11 @@ const Account = () => {
             Account Details
           </Paragraph>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.optionContainer}>
-          <Icon name="history" size={30} color="#272f56" style={{flex: 0.2}} />
+        <TouchableOpacity style={styles.optionContainer}
+          onPress={() => navigation.push('NotificationTab')}>
+          <Icon name="bell" size={30} color="#272f56" style={{flex: 0.2}} />
           <Paragraph style={{flex: 0.7, color: '#272f56'}}>
-            Transaction History
+            Notification Tab
           </Paragraph>
         </TouchableOpacity>
         <TouchableOpacity

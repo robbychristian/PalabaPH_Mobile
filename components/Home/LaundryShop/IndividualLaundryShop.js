@@ -232,7 +232,7 @@ const IndividualLaundryShop = () => {
                   <Image
                     source={{
                       uri:
-                        'https://palabaph.com/PalabaPH_New_v2-main/storage/app/img_service/' +
+                        'https://palabaph.com/PalabaPH_New_v2-main/storage/app/public/img_service/' +
                         item.user_id +
                         '/' +
                         item.add_serv_image_service,
@@ -278,7 +278,7 @@ const IndividualLaundryShop = () => {
                   <Image
                     source={{
                       uri:
-                        'https://palabaph.com/PalabaPH_New_v2-main/storage/app/img_product/' +
+                        'https://palabaph.com/PalabaPH_New_v2-main/storage/app/public/img_product/' +
                         item.user_id +
                         '/' +
                         item.add_prod_image_product,
@@ -462,9 +462,7 @@ const IndividualLaundryShop = () => {
         />
       )}
       {cartArray.length === 0 ? null : (
-        <Badge
-          size={20}
-          style={{position: 'absolute', margin: 30, right: -10, bottom: 20}}>
+        <Badge size={20} style={{position: 'absolute', right: 15, bottom: 55}}>
           {cartArray.length}
         </Badge>
       )}
@@ -522,10 +520,8 @@ const styles = StyleSheet.create({
   },
   fabGroupStyle: {
     position: 'absolute',
-    marginBottom: 16,
     right: 0,
     bottom: 0,
-    marginTop: '210%',
     color: '#fff',
   },
   modalView: {
